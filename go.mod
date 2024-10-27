@@ -2,7 +2,7 @@ module github.com/combo23/mimic
 
 go 1.23.1
 
-require github.com/wcharczuk/go-chart/v2 v2.1.2
+require gonum.org/v1/plot v0.15.0
 
 require (
 	git.sr.ht/~sbinet/gg v0.6.0 // indirect
@@ -15,5 +15,4 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	golang.org/x/image v0.21.0 // indirect
 	golang.org/x/text v0.19.0 // indirect
-	gonum.org/v1/plot v0.15.0 // indirect
 )
