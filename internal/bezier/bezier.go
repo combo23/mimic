@@ -56,11 +56,10 @@ func bezierCurveSequential(t float64, points []types.Point) types.Point {
 	return types.Point{X: x, Y: y}
 }
 
-// Improved parallel implementation
 func bezierCurveParallel(t float64, points []types.Point) types.Point {
 	n := len(points) - 1
 
-	// For small number of points, use sequential version
+	// For small number of points, use sequential version for better optimization
 	if n < 4 {
 		return bezierCurveSequential(t, points)
 	}
@@ -79,7 +78,6 @@ func bezierCurveParallel(t float64, points []types.Point) types.Point {
 		oneMinusTPow[i] = oneMinusTPow[i-1] * (1 - t)
 	}
 
-	// Launch workers
 	for i := 0; i <= n; i++ {
 		wg.Add(1)
 		go func(i int) {
@@ -95,7 +93,6 @@ func bezierCurveParallel(t float64, points []types.Point) types.Point {
 		}(i)
 	}
 
-	// Close results channel after all goroutines complete
 	go func() {
 		wg.Wait()
 		close(results)
@@ -136,7 +133,6 @@ func (b *Bezier) GenerateMovement(opts types.MovementOptions) *types.Movement {
 		opts.NoiseLevel = 1
 	}
 
-	// Generate control points
 	controlPoints := generateControlPoints(opts)
 
 	// Calculate path length (approximate)
@@ -167,7 +163,7 @@ func (b *Bezier) GenerateMovement(opts types.MovementOptions) *types.Movement {
 		t := float64(i) / float64(numPoints-1)
 		point := bezierCurveParallel(t, controlPoints)
 
-		// Add subtle noise to each point
+		// Add noise to each point
 		if opts.NoiseLevel > 0 {
 			microNoise := opts.NoiseLevel * 0.1
 			point.X += (rand.Float64()*2 - 1) * microNoise

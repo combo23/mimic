@@ -46,6 +46,9 @@ func main() {
 
 ![Bézier curve visualization](img/bezier.png)
 
+-[Perlin Noise](https://en.wikipedia.org/wiki/Perlin_noise)
+
+![Perlin noise visualization](img/perlin.png)
 
 ## Contributing
 
