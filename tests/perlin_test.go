@@ -23,10 +23,20 @@ func TestPerlin(t *testing.T) {
 	mimic.AddHesitation(0.1, 100*time.Millisecond)
 	movement := mimic.AddAcceleration(0.8, 1.2)
 
-	err := visualize(*movement, movement.ControlPoints, defaultVisualizationOptions())
+	err := visualize(*movement, movement.ControlPoints, perlinVisualizationOptions)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	t.Log("Bezier curve generated successfully")
+}
+
+var perlinVisualizationOptions = VisualizationOptions{
+	ShowControlPoints: true,
+	ShowGrid:          true,
+	ShowArrows:        true,
+	Title:             "Perlin Noise Mouse Movement",
+	OutputPath:        "perlin.png",
+	Width:             10,
+	Height:            6,
 }
