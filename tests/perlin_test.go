@@ -14,7 +14,7 @@ func TestPerlin(t *testing.T) {
 		EndPoint:      types.Point{X: 1920, Y: 1080},
 		NoiseLevel:    1,
 		Resolution:    types.Point{X: 1920, Y: 1080},
-		ControlPoints: 20,
+		ControlPoints: 50,
 		Speed:         1000,
 	}
 
