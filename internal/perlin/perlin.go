@@ -6,13 +6,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/combo23/mimic/types"
+	"github.com/combo23/mimic/models"
 )
 
 type Perlin struct {
-	types.Movement
+	models.Movement
 	permutation []int
-	gradients   []types.Point
+	gradients   []models.Point
 }
 
 // generatePermutation creates a random permutation table for Perlin noise
@@ -36,10 +36,10 @@ func (p *Perlin) generatePermutation() {
 
 // generateGradients creates random unit vectors for gradient calculation
 func (p *Perlin) generateGradients() {
-	p.gradients = make([]types.Point, 256)
+	p.gradients = make([]models.Point, 256)
 	for i := range p.gradients {
 		angle := rand.Float64() * 2 * math.Pi
-		p.gradients[i] = types.Point{
+		p.gradients[i] = models.Point{
 			X: math.Cos(angle),
 			Y: math.Sin(angle),
 		}
@@ -62,13 +62,13 @@ func (p *Perlin) hash(x, y int) int {
 }
 
 // generateControlPoints creates control points along a Perlin noise path
-func (p *Perlin) generateControlPoints(opts types.MovementOptions) []types.Point {
+func (p *Perlin) generateControlPoints(opts models.MovementOptions) []models.Point {
 	if p.permutation == nil {
 		p.generatePermutation()
 		p.generateGradients()
 	}
 
-	points := make([]types.Point, opts.ControlPoints)
+	points := make([]models.Point, opts.ControlPoints)
 	points[0] = opts.StartPoint
 	points[len(points)-1] = opts.EndPoint
 
@@ -95,7 +95,7 @@ func (p *Perlin) generateControlPoints(opts types.MovementOptions) []types.Point
 			offsetX := p.perlinNoise2D(t, 0.0) * scale
 			offsetY := p.perlinNoise2D(t, 1.0) * scale
 
-			points[i] = types.Point{
+			points[i] = models.Point{
 				X: baseX + offsetX,
 				Y: baseY + offsetY,
 			}
@@ -146,8 +146,8 @@ func (p *Perlin) perlinNoise2D(x, y float64) float64 {
 }
 
 // interpolatePoints generates points between control points using Perlin noise
-func (p *Perlin) interpolatePoints(points []types.Point, numPoints int, noiseLevel float64) []types.Point {
-	result := make([]types.Point, numPoints)
+func (p *Perlin) interpolatePoints(points []models.Point, numPoints int, noiseLevel float64) []models.Point {
+	result := make([]models.Point, numPoints)
 	segmentSize := float64(len(points)-1) / float64(numPoints-1)
 
 	for i := 0; i < numPoints; i++ {
@@ -170,7 +170,7 @@ func (p *Perlin) interpolatePoints(points []types.Point, numPoints int, noiseLev
 		noiseX := p.perlinNoise2D(float64(i)*0.1, 0.0) * noiseScale
 		noiseY := p.perlinNoise2D(float64(i)*0.1, 1.0) * noiseScale
 
-		result[i] = types.Point{
+		result[i] = models.Point{
 			X: baseX + noiseX,
 			Y: baseY + noiseY,
 		}
@@ -180,7 +180,7 @@ func (p *Perlin) interpolatePoints(points []types.Point, numPoints int, noiseLev
 }
 
 // GenerateMovement creates a complete mouse movement path using Perlin noise
-func (p *Perlin) GenerateMovement(opts types.MovementOptions) *types.Movement {
+func (p *Perlin) GenerateMovement(opts models.MovementOptions) *models.Movement {
 	if opts.ControlPoints < 2 {
 		opts.ControlPoints = 2
 	}
@@ -211,7 +211,7 @@ func (p *Perlin) GenerateMovement(opts types.MovementOptions) *types.Movement {
 	points := p.interpolatePoints(controlPoints, numPoints, opts.NoiseLevel*5)
 
 	// Create movement with timing
-	movement := types.Movement{
+	movement := models.Movement{
 		Points:        points,
 		Timing:        make([]time.Duration, numPoints),
 		ControlPoints: controlPoints,
@@ -244,7 +244,7 @@ func (p *Perlin) GenerateMovement(opts types.MovementOptions) *types.Movement {
 }
 
 // AddHesitation adds random pauses to the movement
-func (p *Perlin) AddHesitation(probability float64, maxPause time.Duration) *types.Movement {
+func (p *Perlin) AddHesitation(probability float64, maxPause time.Duration) *models.Movement {
 	m := &p.Movement
 
 	for i := 1; i < len(m.Timing)-1; i++ {
@@ -259,7 +259,7 @@ func (p *Perlin) AddHesitation(probability float64, maxPause time.Duration) *typ
 }
 
 // AddAcceleration modifies timing to simulate acceleration/deceleration
-func (p *Perlin) AddAcceleration(startSpeed, endSpeed float64) *types.Movement {
+func (p *Perlin) AddAcceleration(startSpeed, endSpeed float64) *models.Movement {
 	m := &p.Movement
 
 	totalTime := m.Timing[len(m.Timing)-1]

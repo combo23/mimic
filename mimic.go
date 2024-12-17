@@ -5,7 +5,7 @@ import (
 
 	"github.com/combo23/mimic/internal/bezier"
 	"github.com/combo23/mimic/internal/perlin"
-	"github.com/combo23/mimic/types"
+	"github.com/combo23/mimic/models"
 )
 
 type AlgorithmType int
@@ -16,9 +16,9 @@ const (
 )
 
 type Mimic interface {
-	GenerateMovement(opts types.MovementOptions) *types.Movement
-	AddHesitation(noiseLevel float64, duration time.Duration) *types.Movement
-	AddAcceleration(startSpeed, endSpeed float64) *types.Movement
+	GenerateMovement(opts models.MovementOptions) *models.Movement
+	AddHesitation(noiseLevel float64, duration time.Duration) *models.Movement
+	AddAcceleration(startSpeed, endSpeed float64) *models.Movement
 }
 
 func NewMimic(algorithm AlgorithmType) Mimic {

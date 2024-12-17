@@ -5,15 +5,15 @@ import (
 	"time"
 
 	"github.com/combo23/mimic"
-	"github.com/combo23/mimic/types"
+	"github.com/combo23/mimic/models"
 )
 
 func TestBezier(t *testing.T) {
-	opts := types.MovementOptions{
-		StartPoint:    types.Point{X: 0, Y: 0},
-		EndPoint:      types.Point{X: 1920, Y: 1080},
+	opts := models.MovementOptions{
+		StartPoint:    models.Point{X: 0, Y: 0},
+		EndPoint:      models.Point{X: 1920, Y: 1080},
 		NoiseLevel:    1,
-		Resolution:    types.Point{X: 1920, Y: 1080},
+		Resolution:    models.Point{X: 1920, Y: 1080},
 		ControlPoints: 20,
 		Speed:         1000,
 	}

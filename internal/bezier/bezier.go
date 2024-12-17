@@ -6,16 +6,16 @@ import (
 	"sync"
 	"time"
 
-	"github.com/combo23/mimic/types"
+	"github.com/combo23/mimic/models"
 )
 
 type Bezier struct {
-	types.Movement
+	models.Movement
 }
 
 // generateControlPoints creates random control points for the Bezier curve
-func generateControlPoints(opts types.MovementOptions) []types.Point {
-	points := make([]types.Point, opts.ControlPoints)
+func generateControlPoints(opts models.MovementOptions) []models.Point {
+	points := make([]models.Point, opts.ControlPoints)
 	points[0] = opts.StartPoint
 	points[len(points)-1] = opts.EndPoint
 
@@ -35,7 +35,7 @@ func generateControlPoints(opts types.MovementOptions) []types.Point {
 		offsetX := (rand.Float64()*2 - 1) * maxOffset
 		offsetY := (rand.Float64()*2 - 1) * maxOffset
 
-		points[i] = types.Point{
+		points[i] = models.Point{
 			X: baseX + offsetX,
 			Y: baseY + offsetY,
 		}
@@ -44,7 +44,7 @@ func generateControlPoints(opts types.MovementOptions) []types.Point {
 	return points
 }
 
-func bezierCurveSequential(t float64, points []types.Point) types.Point {
+func bezierCurveSequential(t float64, points []models.Point) models.Point {
 	n := len(points) - 1
 	var x, y float64
 	for i := 0; i <= n; i++ {
@@ -53,10 +53,10 @@ func bezierCurveSequential(t float64, points []types.Point) types.Point {
 		x += points[i].X * basis
 		y += points[i].Y * basis
 	}
-	return types.Point{X: x, Y: y}
+	return models.Point{X: x, Y: y}
 }
 
-func bezierCurveParallel(t float64, points []types.Point) types.Point {
+func bezierCurveParallel(t float64, points []models.Point) models.Point {
 	n := len(points) - 1
 
 	// For small number of points, use sequential version for better optimization
@@ -65,7 +65,7 @@ func bezierCurveParallel(t float64, points []types.Point) types.Point {
 	}
 
 	var wg sync.WaitGroup
-	results := make(chan types.Point, n+1)
+	results := make(chan models.Point, n+1)
 
 	// Pre-calculate common values
 	tPow := make([]float64, n+1)
@@ -86,7 +86,7 @@ func bezierCurveParallel(t float64, points []types.Point) types.Point {
 			coeff := float64(binomialCoeff(n, i))
 			basis := coeff * tPow[i] * oneMinusTPow[n-i]
 
-			results <- types.Point{
+			results <- models.Point{
 				X: points[i].X * basis,
 				Y: points[i].Y * basis,
 			}
@@ -99,7 +99,7 @@ func bezierCurveParallel(t float64, points []types.Point) types.Point {
 	}()
 
 	// Sum up results
-	var finalPoint types.Point
+	var finalPoint models.Point
 	for result := range results {
 		finalPoint.X += result.X
 		finalPoint.Y += result.Y
@@ -122,7 +122,7 @@ func binomialCoeff(n, k int) int {
 }
 
 // GenerateMovement creates a complete mouse movement path
-func (b *Bezier) GenerateMovement(opts types.MovementOptions) *types.Movement {
+func (b *Bezier) GenerateMovement(opts models.MovementOptions) *models.Movement {
 	if opts.ControlPoints < 2 {
 		opts.ControlPoints = 2
 	}
@@ -150,8 +150,8 @@ func (b *Bezier) GenerateMovement(opts types.MovementOptions) *types.Movement {
 	}
 
 	// Generate points along the curve
-	movement := types.Movement{
-		Points:        make([]types.Point, numPoints),
+	movement := models.Movement{
+		Points:        make([]models.Point, numPoints),
 		Timing:        make([]time.Duration, numPoints),
 		ControlPoints: controlPoints,
 	}
@@ -191,7 +191,7 @@ func (b *Bezier) GenerateMovement(opts types.MovementOptions) *types.Movement {
 }
 
 // AddHesitation adds random pauses to the movement
-func (b *Bezier) AddHesitation(probability float64, maxPause time.Duration) *types.Movement {
+func (b *Bezier) AddHesitation(probability float64, maxPause time.Duration) *models.Movement {
 	m := &b.Movement
 
 	for i := 1; i < len(m.Timing)-1; i++ {
@@ -206,7 +206,7 @@ func (b *Bezier) AddHesitation(probability float64, maxPause time.Duration) *typ
 }
 
 // AddAcceleration modifies timing to simulate acceleration/deceleration
-func (b *Bezier) AddAcceleration(startSpeed, endSpeed float64) *types.Movement {
+func (b *Bezier) AddAcceleration(startSpeed, endSpeed float64) *models.Movement {
 	m := &b.Movement
 
 	totalTime := m.Timing[len(m.Timing)-1]
