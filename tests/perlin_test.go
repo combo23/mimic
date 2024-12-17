@@ -1,7 +1,6 @@
 package tests
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/combo23/mimic"
@@ -25,11 +24,6 @@ func TestPerlin(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	for _, point := range movement.Points {
-		t.Log(point.String())
-	}
-	fmt.Println(len(movement.Points))
 
 	t.Log("Bezier curve generated successfully")
 }
