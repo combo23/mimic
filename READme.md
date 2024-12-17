@@ -32,9 +32,7 @@ func main() {
 	}
 
 	mimic := mimic.NewMimic(mimic.BezierAlgorithm)
-	mimic.GenerateMovement(opts)
-	mimic.AddHesitation(0.1, 100*time.Millisecond)
-	movement := mimic.AddAcceleration(0.8, 1.2)
+	movement := mimic.GenerateMovement(opts)
 
 	fmt.Println(movement)
 }
