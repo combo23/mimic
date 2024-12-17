@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"image/color"
 
-	"github.com/combo23/mimic/types"
+	"github.com/combo23/mimic/models"
 	"gonum.org/v1/plot"
 	"gonum.org/v1/plot/plotter"
 	"gonum.org/v1/plot/vg"
@@ -21,7 +21,7 @@ type VisualizationOptions struct {
 }
 
 // Visualize creates a plot of the mouse movement path
-func visualize(movement types.Movement, controlPoints []types.Point, opts VisualizationOptions) error {
+func visualize(movement models.Movement, controlPoints []models.Point, opts VisualizationOptions) error {
 	// Create a new plot
 	p := plot.New()
 
