@@ -1,9 +1,17 @@
 package models
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
 type Point struct {
-	X, Y float64
+	X, Y   float64
+	Timing time.Duration
+}
+
+func (p *Point) String() string {
+	return fmt.Sprintf("(%f, %f) took %v", p.X, p.Y, p.Timing)
 }
 
 type MovementOptions struct {
@@ -18,7 +26,6 @@ type MovementOptions struct {
 // Movement represents a complete mouse movement path
 type Movement struct {
 	Points        []Point
-	Timing        []time.Duration
 	ControlPoints []Point
 }
 

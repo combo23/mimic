@@ -213,13 +213,11 @@ func (p *Perlin) GenerateMovement(opts models.MovementOptions) *models.Movement 
 	// Create movement with timing
 	movement := models.Movement{
 		Points:        points,
-		Timing:        make([]time.Duration, numPoints),
 		ControlPoints: controlPoints,
 	}
 
 	// Calculate timing
 	prevPoint := opts.StartPoint
-	totalTime := time.Duration(0)
 
 	for i := 0; i < numPoints; i++ {
 		point := points[i]
@@ -233,41 +231,11 @@ func (p *Perlin) GenerateMovement(opts models.MovementOptions) *models.Movement 
 		timeForSegment := time.Duration(float64(time.Second) * distance / opts.Speed)
 		timeForSegment += time.Duration(rand.Float64() * float64(timeForSegment) * 0.1)
 
-		totalTime += timeForSegment
-		movement.Timing[i] = totalTime
+		points[i].Timing = timeForSegment
 
 		prevPoint = point
 	}
 
 	p.Movement = movement
-	return &p.Movement
-}
-
-// AddHesitation adds random pauses to the movement
-func (p *Perlin) AddHesitation(probability float64, maxPause time.Duration) *models.Movement {
-	m := &p.Movement
-
-	for i := 1; i < len(m.Timing)-1; i++ {
-		if rand.Float64() < probability {
-			pause := time.Duration(rand.Float64() * float64(maxPause))
-			for j := i; j < len(m.Timing); j++ {
-				m.Timing[j] += pause
-			}
-		}
-	}
-	return &p.Movement
-}
-
-// AddAcceleration modifies timing to simulate acceleration/deceleration
-func (p *Perlin) AddAcceleration(startSpeed, endSpeed float64) *models.Movement {
-	m := &p.Movement
-
-	totalTime := m.Timing[len(m.Timing)-1]
-	for i := 0; i < len(m.Timing); i++ {
-		progress := float64(i) / float64(len(m.Timing)-1)
-		speedFactor := startSpeed + (endSpeed-startSpeed)*progress
-		m.Timing[i] = time.Duration(float64(totalTime) * speedFactor)
-	}
-
 	return &p.Movement
 }

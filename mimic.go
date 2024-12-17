@@ -1,8 +1,6 @@
 package mimic
 
 import (
-	"time"
-
 	"github.com/combo23/mimic/internal/bezier"
 	"github.com/combo23/mimic/internal/perlin"
 	"github.com/combo23/mimic/models"
@@ -17,8 +15,6 @@ const (
 
 type Mimic interface {
 	GenerateMovement(opts models.MovementOptions) *models.Movement
-	AddHesitation(noiseLevel float64, duration time.Duration) *models.Movement
-	AddAcceleration(startSpeed, endSpeed float64) *models.Movement
 }
 
 func NewMimic(algorithm AlgorithmType) Mimic {

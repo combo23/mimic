@@ -152,12 +152,10 @@ func (b *Bezier) GenerateMovement(opts models.MovementOptions) *models.Movement 
 	// Generate points along the curve
 	movement := models.Movement{
 		Points:        make([]models.Point, numPoints),
-		Timing:        make([]time.Duration, numPoints),
 		ControlPoints: controlPoints,
 	}
 
 	prevPoint := opts.StartPoint
-	totalTime := time.Duration(0)
 
 	for i := 0; i < numPoints; i++ {
 		t := float64(i) / float64(numPoints-1)
@@ -179,42 +177,12 @@ func (b *Bezier) GenerateMovement(opts models.MovementOptions) *models.Movement 
 		timeForSegment := time.Duration(float64(time.Second) * distance / opts.Speed)
 		timeForSegment += time.Duration(rand.Float64() * float64(timeForSegment) * 0.1) // 10% random variation
 
-		totalTime += timeForSegment
 		movement.Points[i] = point
-		movement.Timing[i] = totalTime
+		movement.Points[i].Timing = timeForSegment
 
 		prevPoint = point
 	}
 
 	b.Movement = movement
-	return &b.Movement
-}
-
-// AddHesitation adds random pauses to the movement
-func (b *Bezier) AddHesitation(probability float64, maxPause time.Duration) *models.Movement {
-	m := &b.Movement
-
-	for i := 1; i < len(m.Timing)-1; i++ {
-		if rand.Float64() < probability {
-			pause := time.Duration(rand.Float64() * float64(maxPause))
-			for j := i; j < len(m.Timing); j++ {
-				m.Timing[j] += pause
-			}
-		}
-	}
-	return &b.Movement
-}
-
-// AddAcceleration modifies timing to simulate acceleration/deceleration
-func (b *Bezier) AddAcceleration(startSpeed, endSpeed float64) *models.Movement {
-	m := &b.Movement
-
-	totalTime := m.Timing[len(m.Timing)-1]
-	for i := 0; i < len(m.Timing); i++ {
-		progress := float64(i) / float64(len(m.Timing)-1)
-		speedFactor := startSpeed + (endSpeed-startSpeed)*progress
-		m.Timing[i] = time.Duration(float64(totalTime) * speedFactor)
-	}
-
 	return &b.Movement
 }

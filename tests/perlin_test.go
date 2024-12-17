@@ -1,8 +1,8 @@
 package tests
 
 import (
+	"fmt"
 	"testing"
-	"time"
 
 	"github.com/combo23/mimic"
 	"github.com/combo23/mimic/models"
@@ -19,14 +19,17 @@ func TestPerlin(t *testing.T) {
 	}
 
 	mimic := mimic.NewMimic(mimic.PerlinAlgorithm)
-	mimic.GenerateMovement(opts)
-	mimic.AddHesitation(0.1, 100*time.Millisecond)
-	movement := mimic.AddAcceleration(0.8, 1.2)
+	movement := mimic.GenerateMovement(opts)
 
 	err := visualize(*movement, movement.ControlPoints, perlinVisualizationOptions)
 	if err != nil {
 		t.Fatal(err)
 	}
+
+	for _, point := range movement.Points {
+		t.Log(point.String())
+	}
+	fmt.Println(len(movement.Points))
 
 	t.Log("Bezier curve generated successfully")
 }
